@@ -30,10 +30,36 @@ def requires_auth(f):
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/api/watson')
+@app.route('/api/watson', methods=['POST','OPTIONS'])
 @requires_auth
 def watson():
-    return 'OK'
+    endpoint_api = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify'
+    endpoint_token = 'https://iam.bluemix.net/identity/token'
+
+    headers_token = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json",
+    }
+
+    request_data = {
+        'grant_type': "urn:ibm:params:oauth:grant-type:apikey",
+        'apikey': os.environ['API'],
+    }
+
+    params_api = {
+        'version': '2018-03-19',
+        'url': request.get_json()['url'],
+    }
+
+    r = requests.post(endpoint_token, data=request_data, headers=headers_token)
+
+    r_final = requests.get(endpoint_api, headers = {
+                    'Authorization': 'Bearer ' + r.json()['access_token'],
+                    'Accept-Language': 'en',
+                },
+                params = params_api)
+    return jsonify(r_final.json())
+    
 @app.route('/api/spotify', methods=['POST','OPTIONS'])
 @requires_auth
 def spotify():
