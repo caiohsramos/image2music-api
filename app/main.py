@@ -30,7 +30,7 @@ def requires_auth(f):
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/api/watson', methods=['POST','OPTIONS'])
+@app.route('/api/watson', methods=['POST'])
 @requires_auth
 def watson():
     endpoint_api = 'https://gateway.watsonplatform.net/visual-recognition/api/v3/classify'
@@ -60,7 +60,7 @@ def watson():
                 params = params_api)
     return jsonify(r_final.json())
     
-@app.route('/api/spotify', methods=['POST','OPTIONS'])
+@app.route('/api/spotify', methods=['POST'])
 @requires_auth
 def spotify():
     endpoint_token = 'https://accounts.spotify.com/api/token'
